@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top Up MLBB - Aby Pinkish</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: url('https://telegra.ph/file/8f761fd3320154811926e-8c0e8c91d14f1f46d4.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    header {
+      text-align: center;
+      padding: 30px;
+      font-size: 2rem;
+      font-weight: bold;
+      text-shadow: 0 0 20px #00f0ff;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(0,0,0,0.6);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      transition: 0.3s;
+      box-shadow: 0 0 15px rgba(0, 225, 255, 0.5);
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 25px #00e5ff;
+    }
+    .diamond {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #00f0ff;
+    }
+    .price {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+    button {
+      background: linear-gradient(135deg, #00f0ff, #0066ff);
+      border: none;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(0, 225, 255, 0.7);
+    }
+    button:hover {
+      background: #0055ff;
+      box-shadow: 0 0 20px #00e5ff;
+    }
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    .modal-content {
+      background: rgba(0, 10, 30, 0.95);
+      padding: 20px;
+      border-radius: 15px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 0 25px #00f0ff;
+    }
+    input, select {
+      width: 90%;
+      padding: 8px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      text-align: center;
+    }
+    .pay-logo {
+      width: 80px;
+      margin: 10px;
+    }
+    #ownerBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #9400d3;
+    }
+    .qris-box {
+      margin-top: 15px;
+      padding: 10px;
+      background: #fff;
+      border-radius: 12px;
+    }
+    .qris-box img {
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <header>⚡ Aby Pinkish MLBB Top Up 💎</header>
+  <div class="grid">
+    <div class="card"><div class="diamond">86 💎</div><div class="price">Rp 21.900</div><button onclick="openModal('86','21900')">Beli</button></div>
+    <div class="card"><div class="diamond">172 💎</div><div class="price">Rp 43.200</div><button onclick="openModal('172','43200')">Beli</button></div>
+    <div class="card"><div class="diamond">344 💎</div><div class="price">Rp 88.300</div><button onclick="openModal('344','88300')">Beli</button></div>
+    <div class="card"><div class="diamond">716 💎</div><div class="price">Rp 181.000</div><button onclick="openModal('716','181000')">Beli</button></div>
+    <div class="card"><div class="diamond">1000 💎</div><div class="price">Rp 246.000</div><button onclick="openModal('1000','246000')">Beli</button></div>
+    <div class="card"><div class="diamond">2010 💎</div><div class="price">Rp 468.000</div><button onclick="openModal('2010','468000')">Beli</button></div>
+  </div>
+
+  <!-- Modal -->
+  <div id="orderModal" class="modal">
+    <div class="modal-content">
+      <h3>Isi Data</h3>
+      <input id="userId" placeholder="Masukkan ID MLBB">
+      <p id="orderInfo"></p>
+      <h4>Pilih Metode Pembayaran:</h4>
+      <select id="paymentMethod">
+        <option value="Dana">Dana</option>
+        <option value="Gopay">Gopay</option>
+        <option value="QRIS">QRIS</option>
+      </select>
+      <div id="paymentDisplay"></div>
+      <button onclick="submitOrder()">Pesan Sekarang</button>
+      <br><br>
+      <button onclick="closeModal()">Batal</button>
+    </div>
+  </div>
+
+  <!-- Owner Panel -->
+  <button id="ownerBtn" onclick="ownerLogin()">Owner</button>
+
+  <script>
+    let currentDiamond = '';
+    let currentPrice = '';
+
+    function openModal(diamond, price){
+      currentDiamond = diamond;
+      currentPrice = price;
+      document.getElementById('orderModal').style.display = 'flex';
+      document.getElementById('orderInfo').innerText = `${diamond} 💎 - Rp ${price}`;
+      document.getElementById('paymentDisplay').innerHTML = '';
+      document.getElementById('paymentMethod').value = "Dana";
+    }
+
+    function closeModal(){
+      document.getElementById('orderModal').style.display = 'none';
+    }
+
+    document.getElementById('paymentMethod').addEventListener('change', function(){
+      const pay = this.value;
+      const box = document.getElementById('paymentDisplay');
+      if(pay === "Dana"){
+        box.innerHTML = `<img src="https://seeklogo.com/images/D/dana-logo-6A298C8A30-seeklogo.com.png" class="pay-logo"><p>No Dana: 081818472895</p>`;
+      } else if(pay === "Gopay"){
+        box.innerHTML = `<img src="https://seeklogo.com/images/G/gopay-logo-5E3870C5B5-seeklogo.com.png" class="pay-logo"><p>No Gopay: 083851079609</p>`;
+      } else if(pay === "QRIS"){
+        box.innerHTML = `<div class="qris-box"><img src="https://telegra.ph/file/0efa0a63d230bc1ee079f-a407f315629ebc53f5.jpg"><p>Scan QRIS untuk bayar</p></div>`;
+      }
+    });
+
+    function submitOrder(){
+      const id = document.getElementById('userId').value;
+      const pay = document.getElementById('paymentMethod').value;
+      if(!id){ alert('Isi ID dulu!'); return; }
+      localStorage.setItem('order', JSON.stringify({id, diamond: currentDiamond, price: currentPrice, pay, status:'waiting_owner'}));
+      alert('Pesanan terkirim ke owner, tunggu konfirmasi.');
+      closeModal();
+    }
+
+    function ownerLogin(){
+      const pass = prompt('Masukkan password owner:');
+      if(pass==='Adel cantik'){
+        let order = JSON.parse(localStorage.getItem('order'));
+        if(!order){ alert('Belum ada order.'); return; }
+        if(confirm(`Setujui order ID ${order.id} (${order.diamond} 💎 - Rp ${order.price}, Bayar via ${order.pay})?`)){
+          alert('Pesanan disetujui, tunggu 1 menit...');
+          setTimeout(()=>{
+            order.status='success';
+            localStorage.setItem('order', JSON.stringify(order));
+            alert('Top Up berhasil diproses!');
+          },60000);
+        }
+      }else{
+        alert('Password salah!');
+      }
+    }
+  </script>
+</body>
+</html>
